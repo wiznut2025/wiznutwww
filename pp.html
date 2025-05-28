@@ -224,5 +224,32 @@ You may also lodge a complaint to the data protection authority where you believ
     <p>Your message will be forwarded to the appropriate member of our Data Privacy Team, such as Data Protection Officers or members of their teams</p>
   </div>
   <footer class="footer"></footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모든 target="_blank" 링크에 이벤트 리스너 추가
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            
+            if (link && (link.target === '_blank' || link.hasAttribute('data-external'))) {
+                e.preventDefault(); // 기본 동작 방지
+                
+                const url = link.href;
+                if (url) {
+                    // Cocos Creator로 URL 전달
+                    document.location = 'openexternal://' + encodeURIComponent(url);
+                }
+            }
+        });
+    });
+
+    // 직접 호출할 수 있는 함수
+    function openExternalUrl(url) {
+        document.location = 'openexternal://' + encodeURIComponent(url);
+    }
+</script>
+  <!-- 예시 링크들 -->
+<a href="https://www.google.com" target="_blank">구글 (새창)</a>
+<a href="https://www.naver.com" data-external>네이버 (외부)</a>
+<button onclick="openExternalUrl('https://www.daum.net')">다음 열기</button>
 </body>
 </html>
