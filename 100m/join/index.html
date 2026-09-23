@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+  100m 친구 초대 착지 페이지 — https://www.wiznut.com/100m/join?c=<코드>
+
+  ⚠️ 원본은 여기(ideation/apps/100m/web)다. 게시는 wiznut80/wiznutwww(GitHub Pages)에 **직접** 한다 —
+  wiznut-be 의 www 빌드(Jenkinsfile-www)는 `cp -r dist/* .` 라 점 파일(.well-known)을 안 옮기고,
+  덮어쓰기만 하고 지우지는 않으므로 여기 올린 두 파일은 www 재빌드에도 남는다.
+
+  앱이 깔려 있고 앱 링크가 확인됐으면 OS 가 이 페이지를 **열지 않고** 앱으로 보낸다
+  (assetlinks.json). 이 페이지가 보이는 것은 ①앱이 없거나 ②메신저 안 브라우저(카카오톡 등)가
+  앱 링크를 안 넘길 때다 — ②를 위해 「앱에서 열기」가 intent:// 로 앱을 직접 부른다.
+-->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>100m 친구 초대</title>
+<style>
+  :root {
+    --bg: #fbfcfd; --card: #f1f3f5; --fg: #101926; --muted: #5b636e;
+    --primary: #2f7575; --on-primary: #ffffff; --line: #dfe3e8;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1419; --card: #1a2027; --fg: #e8ecf0; --muted: #9aa3ad;
+            --primary: #5fb3b3; --on-primary: #0f1419; --line: #2a323b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--fg);
+         font: 15px/1.5 -apple-system, "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+         word-break: keep-all; display: flex; justify-content: center; }
+  main { width: 100%; max-width: 420px; padding: 72px 24px 40px; display: flex; flex-direction: column; gap: 24px; }
+  h1 { font-size: 34px; margin: 0; letter-spacing: -0.02em; }
+  p { margin: 0; }
+  .muted { color: var(--muted); }
+  .code { background: var(--card); border-radius: 16px; padding: 20px 16px; text-align: center; }
+  .code b { display: block; font: 600 28px/1.2 ui-monospace, "JetBrains Mono", Menlo, monospace; letter-spacing: 0.12em; }
+  .code span { font-size: 12px; }
+  a.btn { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 16px;
+          background: var(--primary); color: var(--on-primary); font-weight: 600; text-decoration: none; }
+  a.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+  .note { font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .bad { display: none; }
+  body.invalid .ok { display: none; }
+  body.invalid .bad { display: block; }
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <h1>100m</h1>
+    <p class="muted">친구가 가까이 오면 위젯이 알려 줘요</p>
+  </div>
+
+  <div class="ok">
+    <p style="margin-bottom:12px">친구가 100m 에 초대했어요</p>
+    <div class="code"><b id="code">····-····</b><span class="muted">앱에서 이 코드를 입력해도 돼요 · 한 번만 쓸 수 있어요</span></div>
+  </div>
+  <a class="btn ok" id="open" href="#">앱에서 열기</a>
+  <p class="bad">초대 링크가 올바르지 않아요. 초대한 친구에게 다시 보내 달라고 해 주세요.</p>
+
+  <p class="note muted">앱이 아직 없나요? 곧 스토어에 올라가요. 지금은 초대한 친구에게 설치 파일을 받아 주세요.</p>
+</main>
+<script>
+  // 코드 모양은 서버와 같다: 헷갈리는 글자 없는 31자 중 8자(apps/100m-server/src/api.rs CODE_ALPHABET).
+  var raw = (new URLSearchParams(location.search).get('c') || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+  if (!/^[2-9A-HJKMNP-Z]{8}$/.test(raw)) {
+    document.body.classList.add('invalid');
+  } else {
+    document.getElementById('code').textContent = raw.slice(0, 4) + '-' + raw.slice(4);
+    var android = /Android/i.test(navigator.userAgent);
+    // 안드로이드는 intent:// — 메신저 안 브라우저도 앱을 부를 수 있고, 앱이 없으면 조용히 실패하지 않고
+    // 브라우저가 처리한다. 그 밖(iOS 앱은 아직 없다)은 커스텀 스킴.
+    document.getElementById('open').href = android
+      ? 'intent://join?c=' + raw + '#Intent;scheme=hundredm;package=com.wiznut.hundredm;end'
+      : 'hundredm://join?c=' + raw;
+  }
+</script>
+</body>
+</html>

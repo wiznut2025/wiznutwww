@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.wiznut.hundredm",
+      "sha256_cert_fingerprints": [
+        "08:1F:F7:E2:B8:53:34:EE:93:25:87:71:32:10:F3:70:61:67:67:2E:78:18:E2:44:40:B6:9D:D6:58:A7:66:38"
+      ]
+    }
+  }
+]
