@@ -2,7 +2,7 @@
 <!--
   100m 친구 초대 착지 페이지 — https://www.wiznut.com/100m/join?c=<코드>
 
-  ⚠️ 원본은 여기(ideation/apps/100m/web)다. 게시는 wiznut80/wiznutwww(GitHub Pages)에 **직접** 한다 —
+  ⚠️ 원본은 여기(ideation/apps/100m/web)다. 게시는 wiznut2025/wiznutwww(GitHub Pages, 옛 이름 wiznut80)에 **직접** 한다 —
   wiznut-be 의 www 빌드(Jenkinsfile-www)는 `cp -r dist/* .` 라 점 파일(.well-known)을 안 옮기고,
   덮어쓰기만 하고 지우지는 않으므로 여기 올린 두 파일은 www 재빌드에도 남는다.
 
@@ -60,7 +60,7 @@
   <a class="btn ok" id="open" href="#">앱에서 열기</a>
   <p class="bad">초대 링크가 올바르지 않아요. 초대한 친구에게 다시 보내 달라고 해 주세요.</p>
 
-  <p class="note muted">앱이 아직 없나요? 곧 스토어에 올라가요. 지금은 초대한 친구에게 설치 파일을 받아 주세요.</p>
+  <p class="note muted" id="noapp">앱이 설치돼 있어야 초대를 받을 수 있어요. 스토어 출시는 준비 중이에요.</p>
 </main>
 <script>
   // 코드 모양은 서버와 같다: 헷갈리는 글자 없는 31자 중 8자(apps/100m-server/src/api.rs CODE_ALPHABET).
@@ -72,9 +72,17 @@
     var android = /Android/i.test(navigator.userAgent);
     // 안드로이드는 intent:// — 메신저 안 브라우저도 앱을 부를 수 있고, 앱이 없으면 조용히 실패하지 않고
     // 브라우저가 처리한다. 그 밖(iOS 앱은 아직 없다)은 커스텀 스킴.
+    // 앱이 없으면 intent:// 는 스토어로 간다 — 아직 스토어에 없으니 **이 페이지로 되돌아와** 그 사실을 말한다.
+    var back = location.origin + location.pathname + '?c=' + raw + '#noapp';
     document.getElementById('open').href = android
-      ? 'intent://join?c=' + raw + '#Intent;scheme=hundredm;package=com.wiznut.hundredm;end'
+      ? 'intent://join?c=' + raw + '#Intent;scheme=hundredm;package=com.wiznut.hundredm;S.browser_fallback_url=' +
+        encodeURIComponent(back) + ';end'
       : 'hundredm://join?c=' + raw;
+    if (location.hash === '#noapp') {
+      var n = document.getElementById('noapp');
+      n.textContent = '이 폰에는 100m 앱이 없어요. 스토어 출시는 준비 중이에요.';
+      n.className = 'note';
+    }
   }
 </script>
 </body>
